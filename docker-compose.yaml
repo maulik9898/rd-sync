@@ -1,0 +1,20 @@
+services:
+  rd-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rd-sync:latest
+    container_name: rd-sync
+    restart: unless-stopped
+    volumes:
+      # Mount your local config directory
+      - ${CONFIG_PATH:-./config}:/config:ro # Use CONFIG_PATH env var or default to ./config
+      - ${LOGS_PATH:-./logs}:/logs # Use LOGS_PATH env var or default to ./logs
+    environment:
+      - TZ=UTC
+      # Override default config path if needed
+      - CONFIG_PATH=/config/config.yaml
+      - DEBUG_COLORS="true"
+      - TERM=xterm-256color  
+      - COLORTERM=truecolor
+
