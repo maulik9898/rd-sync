@@ -1,9 +1,6 @@
 services:
   rd-sync:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: rd-sync:latest
+    image: ghcr.io/maulik9898/rd-sync:main
     container_name: rd-sync
     restart: unless-stopped
     volumes:
@@ -14,7 +11,3 @@ services:
       - TZ=UTC
       # Override default config path if needed
       - CONFIG_PATH=/config/config.yaml
-      - DEBUG_COLORS="true"
-      - TERM=xterm-256color  
-      - COLORTERM=truecolor
-
