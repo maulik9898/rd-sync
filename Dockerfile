@@ -42,7 +42,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY rd_sync rd_sync/
-COPY config config/
 
 # Create config and log directories
 RUN mkdir -p /config /logs && \
