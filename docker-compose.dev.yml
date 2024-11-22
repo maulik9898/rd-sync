@@ -1,0 +1,21 @@
+services:
+  rd-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Add build args if needed
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    # image: rd-sync:local  # Local image tag
+    container_name: rd-sync-dev
+    restart: unless-stopped
+    volumes:
+      # Mount your local config directory
+      - ${CONFIG_PATH:-./config}:/config:ro
+      - ${LOGS_PATH:-./logs}:/logs
+    tty: true
+    environment:
+      - TZ=Asia/Kolkata
+      - PYTHONUNBUFFERED=1 # Ensure Python output isn't buffered
+      - FORCE_COLOR=1
+      - TERM=xterm-256color

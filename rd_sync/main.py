@@ -1,31 +1,45 @@
 import asyncio
-
+import signal
 from rd_sync.config import Settings
-from rd_sync.log_config import logger, setup_logging
+from rd_sync.log_config import get_logger, setup_logging
 from rd_sync.scheduler import SyncScheduler
 
 # Initialize logging
+settings = Settings()
 setup_logging()
+logger = get_logger()
 
 
 async def main():
-    """Main entry point for the application."""
+    """Main entry point."""
+
+    # Create and start scheduler
+    scheduler = None
     try:
-        settings = Settings()
+        logger.info("app.starting", version="1.0.0")
 
-        async with SyncScheduler(settings) as _:
-            # Keep the main task running
-            while True:
-                await asyncio.sleep(1)
+        # Setup signal handlers
+        loop = asyncio.get_running_loop()
+        scheduler = SyncScheduler(settings)
 
-    except KeyboardInterrupt:
-        logger.info("════════════════════════════════════════════")
-        logger.warning("⚡ Gracefully shutting down RD-Sync service...")
-        logger.info("════════════════════════════════════════════")
+        def handle_shutdown(sig):
+            logger.warning(
+                "shutdown.initiated", msg="Gracefully shutting down RD-Sync service"
+            )
+            asyncio.create_task(scheduler.stop())
+
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, lambda s=sig: handle_shutdown(s))
+
+        async with scheduler:
+            # Wait for shutdown signal
+            await scheduler.wait_for_shutdown()
+
     except Exception as e:
-        logger.exception(e)
+        logger.error("main.error", error=str(e))
+        raise
     finally:
-        logger.info("shutdown_complete")
+        logger.info("shutdown.complete")
 
 
 if __name__ == "__main__":

@@ -39,8 +39,7 @@ api:
 # Logging Settings (optional - using defaults)
 log:
   level: "INFO"
-  filename: "rd-sync.log"
-  jobs_dir: "jobs"
+
 
 # Real-Debrid Accounts
 accounts:
@@ -60,6 +59,7 @@ syncs:
       type: "cron"
       value: "0 4 * * *"  # Runs at 4 AM daily
     enabled: true
+    dry_run: true  # Set to false to actually sync torrents
 
   rapid_sync:
     source: "account2"

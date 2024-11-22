@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Any, Dict, Literal, Optional, Tuple, Type
 
 import yaml
-from platformdirs import user_config_dir, user_log_dir
-from pydantic import BaseModel, Field
+from platformdirs import user_config_dir
+from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
 
@@ -13,9 +13,6 @@ class LogSettings(BaseModel):
     """Logging-related settings."""
 
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    directory: Path = Field(default_factory=lambda: Path(user_log_dir("rd-sync")))
-    filename: str = "rd-sync.log"
-    jobs_dir: str = "jobs"
 
 
 class APISettings(BaseModel):
@@ -50,6 +47,7 @@ class SyncConfig(BaseModel):
     destination: str
     schedule: SyncSchedule
     enabled: bool = True
+    dry_run: bool = False
 
 
 class YAMLConfigSettingsSource(PydanticBaseSettingsSource):
